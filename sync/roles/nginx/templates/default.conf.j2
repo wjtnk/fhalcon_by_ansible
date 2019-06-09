@@ -1,0 +1,22 @@
+server {
+        listen       80 default_server;
+        listen       [::]:80 default_server;
+        root {{ doc_root }};
+        server_name  _;
+
+	# Deny access to any files with a .php extension in the uploads directory
+        location ~* /(?:uploads|files)/.*\.php$ {
+                deny all;
+        }
+
+        location / {
+                index index.php index.html index.htm;
+        }
+
+        location ~ .php$ {
+            fastcgi_pass unix:/run/php-fpm/php-fpm.sock;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
+            include fastcgi_params;
+        }
+}
